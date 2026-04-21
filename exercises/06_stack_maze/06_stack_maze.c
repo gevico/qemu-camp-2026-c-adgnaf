@@ -17,6 +17,7 @@ int main(void)
 		int row;
 		int col;
 		int next_dir;
+		
 	};
 	struct Position stack[MAX_ROW * MAX_COL];
 	int visited[MAX_ROW][MAX_COL] = {0};
