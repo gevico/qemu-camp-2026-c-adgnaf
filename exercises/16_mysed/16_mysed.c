@@ -9,15 +9,28 @@ int parse_replace_command(const char* cmd, char** old_str, char** new_str) {
         return -1;
     }
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    const char* start = cmd + 2;
+    const char* mid = strchr(start, '/');
+    if (!mid) return -1;
+    const char* end = strchr(mid + 1, '/');
+    if (!end) return -1;
+
+    *old_str = strndup(start, mid - start);
+    *new_str = strndup(mid + 1, end - mid - 1);
 
     return 0;
 }
 
 void replace_first_occurrence(char* str, const char* old, const char* new) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    char* pos = strstr(str, old);
+    if (!pos) return;
+
+    size_t old_len = strlen(old);
+    size_t new_len = strlen(new);
+    size_t tail_len = strlen(pos + old_len);
+
+    memmove(pos + new_len, pos + old_len, tail_len + 1);
+    memcpy(pos, new, new_len);
 }
 
 int main(int argc, char* argv[]) {

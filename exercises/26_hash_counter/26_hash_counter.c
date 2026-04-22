@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define TABLE_SIZE 1024  // 哈希表大小
+#define TABLE_SIZE 8192  // 哈希表大小
 
 // 哈希表节点结构
 typedef struct HashNode {
@@ -18,10 +18,25 @@ typedef struct {
     int size;
 } HashTable;
 
+static char *dup_string(const char *src) {
+    size_t len = strlen(src) + 1;
+    char *copy = (char *)malloc(len);
+    if (copy != NULL) {
+        memcpy(copy, src, len);
+    }
+    return copy;
+}
+
 // djb2哈希函数
 unsigned long djb2_hash(const char *str) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    unsigned long hash = 5381;
+    int c;
+
+    while ((c = (unsigned char)*str++) != 0) {
+        hash = ((hash << 5) + hash) + c;
+    }
+
+    return hash;
 }
 
 // 创建哈希表
@@ -36,14 +51,31 @@ HashTable *create_hash_table(int size) {
 void hash_table_insert(HashTable *ht, const char *word) {
     unsigned long hash = djb2_hash(word) % ht->size;
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    HashNode *node = ht->table[hash];
+    while (node != NULL) {
+        if (strcmp(node->word, word) == 0) {
+            node->count++;
+            return;
+        }
+        node = node->next;
+    }
+
+    node = (HashNode *)malloc(sizeof(HashNode));
+    node->word = dup_string(word);
+    node->count = 1;
+    node->next = ht->table[hash];
+    ht->table[hash] = node;
 }
 
 // 从哈希表中获取所有单词及其计数
 void get_all_words(HashTable *ht, HashNode **nodes, int *count) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    for (int i = 0; i < ht->size; i++) {
+        HashNode *node = ht->table[i];
+        while (node != NULL) {
+            nodes[(*count)++] = node;
+            node = node->next;
+        }
+    }
 }
 
 // 比较函数用于排序
@@ -52,8 +84,10 @@ int compare_nodes(const void *a, const void *b) {
     HashNode *node_b = *(HashNode **)b;
     
     // 先按计数降序，再按字母升序
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    if (node_a->count != node_b->count) {
+        return node_b->count - node_a->count;
+    }
+    return strcmp(node_a->word, node_b->word);
 }
 
 // 释放哈希表内存
@@ -73,8 +107,29 @@ void free_hash_table(HashTable *ht) {
 
 // 从字符串中获取下一个单词
 char *get_next_word(const char **text) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    const char *ptr = *text;
+    char buffer[256];
+    int length = 0;
+
+    while (*ptr != '\0' && !isalpha((unsigned char)*ptr)) {
+        ptr++;
+    }
+
+    if (*ptr == '\0') {
+        *text = ptr;
+        return NULL;
+    }
+
+    while (*ptr != '\0' && isalpha((unsigned char)*ptr)) {
+        if (length < (int)sizeof(buffer) - 1) {
+            buffer[length++] = (char)tolower((unsigned char)*ptr);
+        }
+        ptr++;
+    }
+
+    buffer[length] = '\0';
+    *text = ptr;
+    return dup_string(buffer);
 }
 
 int main(int argc, char *argv[]) {

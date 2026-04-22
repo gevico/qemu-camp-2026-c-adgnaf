@@ -12,8 +12,22 @@
 int parse_url(const char* url) {
     int err = 0;
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    const char *q = strchr(url, '?');
+    if (!q) goto exit;
+    q++; // move past '?'
+    char buf[512];
+    strncpy(buf, q, sizeof(buf) - 1);
+    buf[sizeof(buf) - 1] = '\0';
+
+    char *token = strtok(buf, "&");
+    while (token) {
+        char *eq = strchr(token, '=');
+        if (eq) {
+            *eq = '\0';
+            printf("key = %s, value = %s\n", token, eq + 1);
+        }
+        token = strtok(NULL, "&");
+    }
 
 exit:
     return err;

@@ -11,36 +11,62 @@ static link head = &headsentinel;
 static link tail = &tailsentinel;
 
 link make_node(int data) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    link node = (link)malloc(sizeof(struct node));
+    if (node == NULL) {
+        return NULL;
+    }
+    node->data = data;
+    node->prev = NULL;
+    node->next = NULL;
+    return node;
 }
 
 void free_node(link p) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    free(p);
 }
 
 link search(int key) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    for (link current = head->next; current != tail; current = current->next) {
+        if (current->data == key) {
+            return current;
+        }
+    }
+    return NULL;
 }
 
 void insert(link p) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    if (p == NULL) {
+        return;
+    }
+    p->next = head->next;
+    p->prev = head;
+    head->next->prev = p;
+    head->next = p;
 }
 
 void delete(link p) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    if (p == NULL || p == head || p == tail) {
+        return;
+    }
+    p->prev->next = p->next;
+    p->next->prev = p->prev;
+    p->prev = NULL;
+    p->next = NULL;
 }
 
 void traverse(void (*visit)(link)) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    for (link current = head->next; current != tail; current = current->next) {
+        visit(current);
+    }
 }
 
 void destroy(void) {
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    link current = head->next;
+    while (current != tail) {
+        link next = current->next;
+        free_node(current);
+        current = next;
+    }
+    head->next = tail;
+    tail->prev = head;
 }

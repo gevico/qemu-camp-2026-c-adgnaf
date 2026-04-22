@@ -20,7 +20,36 @@ int main() {
     int report_interval=5;
 
     // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    q.head = 0;
+    q.tail = total_people - 1;
+    q.count = total_people;
+
+    for (int i = 0; i < total_people; i++) {
+        q.data[i].id = i + 1;
+    }
+
+    while (q.count > 1) {
+        for (int i = 1; i < report_interval; i++) {
+            q.tail++;
+            if (q.tail == MAX_PEOPLE) {
+                q.tail = 0;
+            }
+            q.data[q.tail] = q.data[q.head];
+
+            q.head++;
+            if (q.head == MAX_PEOPLE) {
+                q.head = 0;
+            }
+        }
+
+        printf("淘汰: %d\n", q.data[q.head].id);
+        q.head++;
+        if (q.head == MAX_PEOPLE) {
+            q.head = 0;
+        }
+        q.count--;
+    }
+
     
     printf("最后剩下的人是: %d\n", q.data[q.head].id);
 
